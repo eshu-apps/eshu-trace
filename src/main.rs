@@ -82,6 +82,17 @@ enum Commands {
     /// Show premium features and upgrade info
     Premium,
 
+    /// Activate license key
+    Activate {
+        /// License key from Gumroad
+        #[arg(short, long)]
+        key: Option<String>,
+
+        /// Email address
+        #[arg(short, long)]
+        email: Option<String>,
+    },
+
     /// Show status and configuration
     Status,
 }
@@ -112,6 +123,9 @@ fn run() -> Result<()> {
         Commands::Premium => {
             show_premium_info()?;
         }
+        Commands::Activate { key, email } => {
+            activate_command(key, email)?;
+        }
         Commands::Status => {
             show_status()?;
         }
@@ -123,6 +137,52 @@ fn run() -> Result<()> {
 fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Result<()> {
     println!("{}", "🕐 Eshu Trace - Time Travel Debug".cyan().bold());
     println!();
+
+    // Check license and trace limit
+    let license = premium::get_license()?;
+
+    if !license.can_trace() {
+        println!("{}", "❌ Trial limit reached!".red().bold());
+        println!();
+        println!("You've used all {} free traces.", 3);
+        println!();
+        println!("{}", "Purchase Eshu Trace:".yellow());
+        println!("  💳 Standalone license: {}", premium::get_upgrade_url());
+        println!("  💎 Or get Eshu Premium (includes Trace): {}", premium::get_eshu_premium_url());
+        println!();
+        println!("{}", "Benefits of purchasing:".green());
+        println!("  ✓ Unlimited traces");
+        println!("  ✓ Automated bisect with VM testing");
+        println!("  ✓ AI conflict prediction");
+        println!("  ✓ Community issue database");
+        println!("  ✓ Priority support");
+        println!();
+        anyhow::bail!("Trial limit reached. Please purchase a license to continue.");
+    }
+
+    // Show trial status
+    match license.license_type {
+        premium::LicenseType::Trial => {
+            if let Some(remaining) = license.remaining_traces() {
+                println!(
+                    "{} Trial: {}/{} traces remaining",
+                    "ℹ️".cyan(),
+                    remaining,
+                    3
+                );
+                println!("{}", "   Purchase: https://eshu-trace.gumroad.com/l/eshu-trace".dim());
+                println!();
+            }
+        }
+        premium::LicenseType::Standalone => {
+            println!("{} Eshu Trace Licensed", "✓".green());
+            println!();
+        }
+        premium::LicenseType::Premium => {
+            println!("{} Eshu Premium (includes Trace)", "✓".green());
+            println!();
+        }
+    }
 
     if auto && !premium::is_premium()? {
         println!("{}", "⚠️  Automated bisect is a Premium feature".yellow());
@@ -167,13 +227,40 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
     println!();
 
     // Run bisect
-    if auto && premium::is_premium()? {
-        session.run_automated()?;
+    let result = if auto && premium::is_premium()? {
+        session.run_automated()
     } else {
-        session.run_manual()?;
+        session.run_manual()
+    };
+
+    // Increment usage count after successful trace
+    if result.is_ok() {
+        premium::increment_trace_usage()?;
+
+        // Show updated trial status
+        let license = premium::get_license()?;
+        if license.license_type == premium::LicenseType::Trial {
+            println!();
+            if let Some(remaining) = license.remaining_traces() {
+                if remaining > 0 {
+                    println!(
+                        "{} {} trial traces remaining",
+                        "ℹ️".cyan(),
+                        remaining
+                    );
+                    println!("{}", "   Purchase unlimited: https://eshu-trace.gumroad.com/l/eshu-trace".dim());
+                } else {
+                    println!("{}", "⚠️  This was your last free trace!".yellow().bold());
+                    println!();
+                    println!("Purchase Eshu Trace for unlimited traces:");
+                    println!("  💳 {}", premium::get_upgrade_url());
+                    println!("  💎 Or get Eshu Premium: {}", premium::get_eshu_premium_url());
+                }
+            }
+        }
     }
 
-    Ok(())
+    result
 }
 
 fn list_snapshots(verbose: bool) -> Result<()> {
@@ -317,30 +404,136 @@ fn test_command(command: Option<String>) -> Result<()> {
 }
 
 fn show_premium_info() -> Result<()> {
-    println!("{}", "💎 Eshu Trace Premium".cyan().bold());
+    println!("{}", "💎 Eshu Trace - Purchase Options".cyan().bold());
     println!();
 
-    println!("{}", "Free Features:".green());
-    println!("  ✓ Manual bisect (you test each step)");
+    let license = premium::get_license()?;
+
+    // Show current status
+    match license.license_type {
+        premium::LicenseType::Trial => {
+            println!("{}", "Current Status: Trial".yellow());
+            if let Some(remaining) = license.remaining_traces() {
+                println!("Traces used: {}/3", license.traces_used);
+                println!("Traces remaining: {}", remaining);
+            }
+            println!();
+        }
+        premium::LicenseType::Standalone => {
+            println!("{}", "Current Status: Eshu Trace Licensed ✓".green());
+            println!("Traces used: {} (unlimited)", license.traces_used);
+            println!();
+            return Ok(());
+        }
+        premium::LicenseType::Premium => {
+            println!("{}", "Current Status: Eshu Premium ✓".green());
+            println!("Traces used: {} (unlimited via Eshu Premium)", license.traces_used);
+            println!();
+            return Ok(());
+        }
+    }
+
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!();
+
+    println!("{}", "OPTION 1: Eshu Trace Standalone".cyan().bold());
+    println!();
+    println!("{}", "What you get:".green());
+    println!("  ✓ Unlimited traces");
+    println!("  ✓ Manual bisect");
     println!("  ✓ Snapshot comparison");
     println!("  ✓ Package diff viewer");
+    println!("  ✓ Priority email support");
+    println!();
+    println!("{}", "Pricing:".yellow());
+    println!("  💳 $19.99 one-time payment");
+    println!();
+    println!("{}", "Purchase:".cyan());
+    println!("  {}", premium::get_upgrade_url());
     println!();
 
-    println!("{}", "Premium Features:".yellow());
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!();
+
+    println!("{}", "OPTION 2: Eshu Premium (Best Value!)".cyan().bold());
+    println!();
+    println!("{}", "What you get:".green());
+    println!("  ✓ EVERYTHING in Eshu Trace Standalone, PLUS:");
     println!("  ⭐ Automated bisect (boots VMs, runs tests)");
     println!("  ⭐ AI conflict prediction");
     println!("  ⭐ Community issue database");
-    println!("  ⭐ Automatic rollback creation");
-    println!("  ⭐ Priority support");
+    println!("  ⭐ Full Eshu installer Premium features");
+    println!("     • Ghost Mode (eshu try)");
+    println!("     • Eshufile (system sync)");
+    println!("     • Conflict Oracle");
+    println!("     • AI-powered bundle suggestions");
+    println!("     • Unlimited AI queries");
+    println!("  ⭐ Priority support for all products");
+    println!();
+    println!("{}", "Pricing:".yellow());
+    println!("  💎 $9.99/month or $39.99/year (save 33%)");
+    println!();
+    println!("{}", "Purchase:".cyan());
+    println!("  {}", premium::get_eshu_premium_url());
     println!();
 
-    println!("{}", "Pricing:".cyan());
-    println!("  • Part of Eshu Premium subscription");
-    println!("  • $9.99/month or $39.99/year");
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!();
+    println!("{}", "💡 Recommendation:".yellow());
+    println!("   If you only need trace → Eshu Trace ($19.99 one-time)");
+    println!("   If you use eshu-installer too → Eshu Premium ($9.99/mo, includes both!)");
+
+    Ok(())
+}
+
+fn activate_command(key: Option<String>, email: Option<String>) -> Result<()> {
+    println!("{}", "🔑 Activate Eshu Trace License".cyan().bold());
     println!();
 
-    println!("Upgrade at: https://eshu-installer.com/upgrade");
-    println!("Support: https://github.com/sponsors/eshu-apps");
+    let license_key = if let Some(k) = key {
+        k
+    } else {
+        dialoguer::Input::<String>::new()
+            .with_prompt("Enter your Gumroad license key")
+            .interact()?
+    };
+
+    let email_addr = if let Some(e) = email {
+        e
+    } else {
+        dialoguer::Input::<String>::new()
+            .with_prompt("Enter your email address")
+            .interact()?
+    };
+
+    println!();
+    println!("{}", "Validating license...".dim());
+
+    match premium::activate_license(&license_key, &email_addr) {
+        Ok((true, message)) => {
+            println!();
+            println!("{} {}", "✓".green().bold(), message);
+            println!();
+            println!("{}", "Thank you for supporting Eshu Trace!".green());
+            println!("You now have unlimited traces.");
+        }
+        Ok((false, message)) => {
+            println!();
+            println!("{} {}", "✗".red().bold(), message);
+            println!();
+            println!("Please check:");
+            println!("  • License key is correct (copy-paste from Gumroad email)");
+            println!("  • Email matches your purchase");
+            println!();
+            println!("Need help? Email: support@eshu-apps.com");
+        }
+        Err(e) => {
+            println!();
+            println!("{} Activation failed: {}", "✗".red().bold(), e);
+            println!();
+            println!("Need help? Email: support@eshu-apps.com");
+        }
+    }
 
     Ok(())
 }

@@ -40,21 +40,55 @@ Would you like to:
 3. See if others reported this
 ```
 
+## Pricing
+
+**Eshu Trace is a paid product with a free trial.**
+
+### ✨ Free Trial
+- **3 free traces** to try before you buy
+- Full feature access during trial
+- No credit card required
+
+### 💳 Purchase Options
+
+**Option 1: Eshu Trace Standalone - $19.99 one-time**
+- ✓ Unlimited traces
+- ✓ Manual bisect
+- ✓ Snapshot comparison
+- ✓ Package diff viewer
+- ✓ Priority email support
+- [**Purchase →**](https://eshu-trace.gumroad.com/l/eshu-trace)
+
+**Option 2: Eshu Premium - $9.99/month or $39.99/year** *(Best Value!)*
+- ✓ **Everything** in Eshu Trace Standalone, PLUS:
+- ⭐ Automated bisect (boots VMs, runs tests)
+- ⭐ AI conflict prediction
+- ⭐ Community issue database
+- ⭐ **Full Eshu installer Premium features:**
+  - Ghost Mode (`eshu try`)
+  - Eshufile (system sync)
+  - Conflict Oracle
+  - AI-powered bundle suggestions
+  - Unlimited AI queries
+- ⭐ Priority support for all products
+- [**Upgrade →**](https://eshu-installer.com/upgrade)
+
+> **💡 Recommendation:** If you only need trace debugging → Eshu Trace Standalone ($19.99 one-time). If you also use eshu-installer → Eshu Premium ($9.99/mo) includes both!
+
 ## Features
 
-### Free Features ✓
+### Included Features
 - **Manual bisect** - Interactive binary search through package changes
 - **Snapshot comparison** - View package differences between any snapshots
 - **Package diff viewer** - See added/removed/upgraded packages
 - **Multi-distro support** - Works with Arch, Debian, Fedora, and derivatives
 - **Multiple snapshot backends** - Timeshift, Snapper, BTRFS, LVM
 
-### Premium Features ⭐
+### Eshu Premium Exclusive ⭐
 - **Automated bisect** - Boots VMs/containers and runs your test suite automatically
 - **AI conflict prediction** - Predicts which packages might conflict
 - **Community issue database** - See if others hit the same issue
-- **Automatic rollback creation** - Creates snapshots before testing
-- **Priority support** - Direct help from the Eshu team
+- **Integration with eshu-installer** - Use `eshu trace` command
 
 ## Installation
 
@@ -94,6 +128,14 @@ Eshu Trace requires a snapshot system:
 - **LVM** snapshots
 
 ## Quick Start
+
+### 0. Activate Your License (After Purchase)
+
+```bash
+eshu-trace activate --key YOUR_LICENSE_KEY --email your@email.com
+```
+
+Or if you have Eshu Premium, it will automatically detect your license!
 
 ### 1. List Available Snapshots
 
@@ -135,9 +177,24 @@ Commands:
   snapshots   List available snapshots
   diff        Show package differences between snapshots
   test        Test if issue occurs with current packages
-  premium     Show premium features and upgrade info
+  activate    Activate your license key
+  premium     Show purchase options and pricing
   status      Show status and configuration
   help        Print this message or the help of the given subcommand(s)
+```
+
+### Trial Usage
+
+Your first 3 traces are free! After that:
+```bash
+# See your trial status
+eshu-trace status
+
+# View purchase options
+eshu-trace premium
+
+# Activate license after purchase
+eshu-trace activate
 ```
 
 ### Examples
@@ -178,23 +235,18 @@ Eshu Trace integrates with your existing snapshot system:
 - Guides you through testing each bisect step
 - Never modifies your snapshots
 
-## Premium
+## Integration with Eshu Installer (Premium Users)
 
-Eshu Trace Premium is part of the **Eshu Premium** subscription.
+If you have **Eshu Premium**, you can use eshu-trace directly from eshu-installer:
 
-### Pricing
-- $9.99/month
-- $39.99/year (save 33%)
+```bash
+# Install via eshu-installer (Premium only)
+eshu trace bisect
+eshu trace snapshots
+eshu trace diff snap1 snap2
+```
 
-### What You Get
-- All Eshu Premium features (eshu-installer, eshu-trace, etc.)
-- Automated bisect with VM/container testing
-- AI conflict prediction
-- Community issue database access
-- Priority support
-- Support open-source development
-
-[Upgrade to Premium](https://eshu-installer.com/upgrade)
+Your Eshu Premium license automatically grants unlimited access to eshu-trace!
 
 ## Why Eshu Trace?
 
