@@ -559,14 +559,63 @@ fn activate_command(key: Option<String>, email: Option<String>) -> Result<()> {
 }
 
 fn show_status() -> Result<()> {
-    println!("{}", "📊 Eshu Trace Status".cyan().bold());
+    // Exciting header
+    println!();
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".cyan());
+    println!("{}", "   🔍 ESHU TRACE - TIME TRAVEL DEBUG FOR LINUX    ".cyan().bold());
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".cyan());
     println!();
 
     // Check license
+    let license = premium::get_license()?;
     let is_premium = premium::is_premium()?;
-    let tier = if is_premium { "Premium" } else { "Free" };
 
-    println!("{} {}", "License:".cyan(), tier);
+    // Show what Eshu Trace can do
+    println!("{}", "✨ What Eshu Trace Does:".green().bold());
+    println!("   • {} - Binary search through package history", "Find the culprit".yellow());
+    println!("   • {} - No more full system rollbacks", "Surgical fixes".yellow());
+    println!("   • {} - Works with Timeshift, Snapper, Btrfs, LVM", "Universal".yellow());
+    println!("   • {} - Identify the exact package that broke your system", "Precise".yellow());
+    println!();
+
+    // License status
+    match license.license_type {
+        premium::LicenseType::Trial => {
+            if let Some(remaining) = license.remaining_traces() {
+                println!("{} {}", "License:".cyan(), "Free Trial".yellow());
+                println!("{} {}/{} ({})", "Traces:".cyan(), license.traces_used, 3,
+                    format!("{} remaining", remaining).green());
+                println!();
+
+                if remaining > 0 {
+                    println!("{}", "💡 Quick Start:".yellow().bold());
+                    println!("   1. Run: {} to see your snapshots", "eshu-trace snapshots".white());
+                    println!("   2. Run: {} to find the problem", "eshu-trace bisect".white());
+                    println!("   3. Enjoy {} and consider upgrading!", format!("{} more free traces", remaining).green());
+                } else {
+                    println!("{}", "🔒 Trial Limit Reached".yellow().bold());
+                    println!("   Run {} to see upgrade options", "eshu-trace premium".white());
+                }
+                println!();
+            }
+        }
+        premium::LicenseType::Standalone => {
+            println!("{} {}", "License:".cyan(), "✅ Eshu Trace Licensed".green().bold());
+            println!("{} {} (unlimited)", "Traces Used:".cyan(), license.traces_used);
+            println!();
+            println!("{}", "🎉 Thank you for supporting Eshu Trace!".green());
+            println!();
+        }
+        premium::LicenseType::Premium => {
+            println!("{} {}", "License:".cyan(), "✅ Eshu Premium".green().bold());
+            println!("{} {} (unlimited + automation)", "Traces Used:".cyan(), license.traces_used);
+            println!();
+            println!("{}", "🎉 You have access to ALL Eshu features!".green());
+            println!();
+        }
+    }
+
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
     println!();
 
     // Check snapshot backend
