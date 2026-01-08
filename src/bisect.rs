@@ -1,10 +1,9 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use colored::*;
 use dialoguer::Confirm;
-use std::collections::HashSet;
 
 use crate::snapshot::Snapshot;
-use crate::package_diff::{compute_diff, PackageDiff, PackageChange};
+use crate::package_diff::{compute_diff, PackageChange};
 
 pub struct BisectSession {
     good_snapshot: Snapshot,
@@ -81,9 +80,9 @@ impl BisectSession {
             );
             println!();
 
-            println!("{}", "Packages in this test:".dim());
+            println!("{}", "Packages in this test:".dimmed());
             for pkg in test_packages.iter().take(10) {
-                println!("  • {}", pkg.name().dim());
+                println!("  • {}", pkg.name().dimmed());
             }
             if test_packages.len() > 10 {
                 println!("  ... and {} more", test_packages.len() - 10);
@@ -164,7 +163,7 @@ impl BisectSession {
         println!("{}", "🤖 Automated Bisect (Premium)".cyan().bold());
         println!();
 
-        println!("{}", "This feature will:".dim());
+        println!("{}", "This feature will:".dimmed());
         println!("  • Boot test VMs for each bisect step");
         println!("  • Run your test suite automatically");
         println!("  • Find the culprit without manual intervention");

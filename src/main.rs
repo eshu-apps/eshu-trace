@@ -149,7 +149,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
     recovery_ctx.ensure_mounted()?;
 
     println!("{}", "🔍 Eshu-Trace: Find the Breaking Package".cyan().bold());
-    println!("{}", "    No More Rollbacks. Build On.".dim());
+    println!("{}", "    No More Rollbacks. Build On.".dimmed());
     println!();
 
     // Check license and trace limit
@@ -184,7 +184,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
                     remaining,
                     3
                 );
-                println!("{}", "   Purchase: https://eshuapps.gumroad.com/l/eshu-trace".dim());
+                println!("{}", "   Purchase: https://eshuapps.gumroad.com/l/eshu-trace".dimmed());
                 println!();
             }
         }
@@ -200,7 +200,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
 
     if auto && !premium::is_premium()? {
         println!("{}", "⚠️  Automated bisect is a Premium feature".yellow());
-        println!("{}", "   Using manual bisect mode instead...".dim());
+        println!("{}", "   Using manual bisect mode instead...".dimmed());
         println!();
     }
 
@@ -268,7 +268,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
                         "ℹ️".cyan(),
                         remaining
                     );
-                    println!("{}", "   Purchase unlimited: https://eshuapps.gumroad.com/l/eshu-trace".dim());
+                    println!("{}", "   Purchase unlimited: https://eshuapps.gumroad.com/l/eshu-trace".dimmed());
                 } else {
                     println!("{}", "⚠️  This was your last free trace!".yellow().bold());
                     println!();
@@ -352,7 +352,7 @@ fn diff_command(snapshot1: String, snapshot2: String) -> Result<()> {
     if !diff.upgraded.is_empty() {
         println!("{} Upgraded packages ({}):", "⬆️".yellow(), diff.upgraded.len());
         for (pkg, old_ver, new_ver) in &diff.upgraded {
-            println!("   {} {} → {}", pkg, old_ver.dim(), new_ver);
+            println!("   {} {} → {}", pkg, old_ver.dimmed(), new_ver);
         }
         println!();
     }
@@ -360,7 +360,7 @@ fn diff_command(snapshot1: String, snapshot2: String) -> Result<()> {
     if !diff.downgraded.is_empty() {
         println!("{} Downgraded packages ({}):", "⬇️".yellow(), diff.downgraded.len());
         for (pkg, old_ver, new_ver) in &diff.downgraded {
-            println!("   {} {} → {}", pkg, old_ver.dim(), new_ver);
+            println!("   {} {} → {}", pkg, old_ver.dimmed(), new_ver);
         }
         println!();
     }
@@ -453,7 +453,7 @@ fn show_premium_info() -> Result<()> {
         }
     }
 
-    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dimmed());
     println!();
 
     println!("{}", "OPTION 1: Eshu Trace Standalone".cyan().bold());
@@ -472,7 +472,7 @@ fn show_premium_info() -> Result<()> {
     println!("  {}", premium::get_upgrade_url());
     println!();
 
-    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dimmed());
     println!();
 
     println!("{}", "OPTION 2: Eshu Premium (Best Value!)".cyan().bold());
@@ -497,7 +497,7 @@ fn show_premium_info() -> Result<()> {
     println!("  {}", premium::get_eshu_premium_url());
     println!();
 
-    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dim());
+    println!("{}", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".dimmed());
     println!();
     println!("{}", "💡 Recommendation:".yellow());
     println!("   If you only need trace → Eshu Trace ($19.99 one-time)");
@@ -527,7 +527,7 @@ fn activate_command(key: Option<String>, email: Option<String>) -> Result<()> {
     };
 
     println!();
-    println!("{}", "Validating license...".dim());
+    println!("{}", "Validating license...".dimmed());
 
     match premium::activate_license(&license_key, &email_addr) {
         Ok((true, message)) => {
@@ -637,7 +637,7 @@ fn show_status() -> Result<()> {
 
     if let Ok(output) = std::process::Command::new("uname").arg("-a").output() {
         if let Ok(info) = String::from_utf8(output.stdout) {
-            println!("  {}", info.trim().dim());
+            println!("  {}", info.trim().dimmed());
         }
     }
 

@@ -1,6 +1,6 @@
 // Automatic package fixing after trace identifies culprit
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use colored::*;
 use dialoguer::{Confirm, Select};
 use std::process::Command;
@@ -43,11 +43,11 @@ impl PackageFixer {
             }
             PackageChange::Upgraded(pkg, old_ver, new_ver) => {
                 println!("  {} Package upgraded: {}", "⬆️".yellow(), pkg.name);
-                println!("     From: {} → To: {}", old_ver.dim(), new_ver.yellow());
+                println!("     From: {} → To: {}", old_ver.dimmed(), new_ver.yellow());
             }
             PackageChange::Downgraded(pkg, old_ver, new_ver) => {
                 println!("  {} Package downgraded: {}", "⬇️".yellow(), pkg.name);
-                println!("     From: {} → To: {}", old_ver.dim(), new_ver.yellow());
+                println!("     From: {} → To: {}", old_ver.dimmed(), new_ver.yellow());
             }
         }
 
@@ -164,7 +164,7 @@ impl PackageFixer {
                 let cmd = format!("{}sudo pacman -U /var/cache/pacman/pkg/{}-{}*.pkg.tar.*",
                                  chroot_prefix, package, version);
 
-                println!("{} Running: {}", "→".dim(), cmd.dim());
+                println!("{} Running: {}", "→".dimmed(), cmd.dimmed());
 
                 let result = Command::new("sh")
                     .arg("-c")
@@ -176,7 +176,7 @@ impl PackageFixer {
             "ubuntu" | "debian" => {
                 let cmd = format!("{}sudo apt-get install {}={}", chroot_prefix, package, version);
 
-                println!("{} Running: {}", "→".dim(), cmd.dim());
+                println!("{} Running: {}", "→".dimmed(), cmd.dimmed());
 
                 let result = Command::new("sh")
                     .arg("-c")
@@ -188,7 +188,7 @@ impl PackageFixer {
             "fedora" | "rhel" => {
                 let cmd = format!("{}sudo dnf downgrade {}-{}", chroot_prefix, package, version);
 
-                println!("{} Running: {}", "→".dim(), cmd.dim());
+                println!("{} Running: {}", "→".dimmed(), cmd.dimmed());
 
                 let result = Command::new("sh")
                     .arg("-c")
@@ -251,7 +251,7 @@ impl PackageFixer {
             }
         };
 
-        println!("{} Running: {}", "→".dim(), cmd.dim());
+        println!("{} Running: {}", "→".dimmed(), cmd.dimmed());
 
         let result = Command::new("sh")
             .arg("-c")
@@ -279,7 +279,7 @@ impl PackageFixer {
             }
             "ubuntu" | "debian" => {
                 let cmd = format!("sudo apt-mark hold {}", package);
-                println!("{} Running: {}", "→".dim(), cmd.dim());
+                println!("{} Running: {}", "→".dimmed(), cmd.dimmed());
                 Command::new("sh").arg("-c").arg(&cmd).status()?;
                 println!("{} Package pinned", "✓".green());
             }
