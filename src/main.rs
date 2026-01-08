@@ -25,6 +25,8 @@ mod snapshot;
 mod package_diff;
 mod test_runner;
 mod premium;
+mod recovery;
+mod fixer;
 
 use crate::bisect::BisectSession;
 use crate::snapshot::SnapshotManager;
@@ -33,7 +35,7 @@ use crate::snapshot::SnapshotManager;
 #[command(name = "eshu-trace")]
 #[command(author = "Eshu Team")]
 #[command(version)]
-#[command(about = "Find which package broke your system", long_about = None)]
+#[command(about = "Eshu-Trace: Find which package broke your system", long_about = "No More Rollbacks. Trace and Target the Exact Offending Package. Build On.")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -95,6 +97,9 @@ enum Commands {
 
     /// Show status and configuration
     Status,
+
+    /// Show recovery mode instructions (for broken systems)
+    Recovery,
 }
 
 fn main() {
@@ -129,13 +134,22 @@ fn run() -> Result<()> {
         Commands::Status => {
             show_status()?;
         }
+        Commands::Recovery => {
+            recovery::show_recovery_instructions();
+        }
     }
 
     Ok(())
 }
 
 fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Result<()> {
-    println!("{}", "🔍 Eshu Trace - Find the Breaking Package".cyan().bold());
+    // Detect recovery mode
+    let recovery_ctx = recovery::RecoveryContext::detect()?;
+    recovery_ctx.show_recovery_banner();
+    recovery_ctx.ensure_mounted()?;
+
+    println!("{}", "🔍 Eshu-Trace: Find the Breaking Package".cyan().bold());
+    println!("{}", "    No More Rollbacks. Build On.".dim());
     println!();
 
     // Check license and trace limit
@@ -237,6 +251,12 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
     if result.is_ok() {
         premium::increment_trace_usage()?;
 
+        // OFFER FIX after finding culprit
+        if let Some(culprit) = session.get_culprit() {
+            let fixer = fixer::PackageFixer::new(recovery_ctx);
+            fixer.offer_fix(culprit)?;
+        }
+
         // Show updated trial status
         let license = premium::get_license()?;
         if license.license_type == premium::LicenseType::Trial {
@@ -252,7 +272,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
                 } else {
                     println!("{}", "⚠️  This was your last free trace!".yellow().bold());
                     println!();
-                    println!("Purchase Eshu Trace for unlimited traces:");
+                    println!("Purchase Eshu-Trace for unlimited traces:");
                     println!("  💳 {}", premium::get_upgrade_url());
                     println!("  💎 Or get Eshu Premium: {}", premium::get_eshu_premium_url());
                 }

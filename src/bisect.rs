@@ -17,6 +17,10 @@ pub struct BisectSession {
 }
 
 impl BisectSession {
+    pub fn get_culprit(&self) -> Option<&PackageChange> {
+        self.found_culprit.as_ref()
+    }
+
     pub fn new(good_snapshot: Snapshot, bad_snapshot: Snapshot) -> Result<Self> {
         let diff = compute_diff(&good_snapshot, &bad_snapshot)?;
         let package_changes = diff.all_changes();
