@@ -1,21 +1,19 @@
-# Eshu Trace - Time Travel Debug for Linux
+# Eshu Trace
 
-> Binary search through package update history to find the exact package that broke your system
+**Find which package broke your system**
+
+Binary search through updates to pinpoint breaking changes in ~6 steps instead of testing all packages manually.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
 
 ## The Problem
 
-Something broke after updates but you don't know which package caused it:
-- Updated 47 packages yesterday
-- System now crashes on boot / app won't launch / feature broken
-- Traditional rollback = lose ALL updates
-- No way to find the culprit package
+Updated 47 packages. Now your system is broken. Which one did it?
 
 ## The Solution
 
-**Eshu Trace** uses binary search (bisect) to find the breaking package:
+Eshu Trace uses **binary search** to find the breaking package:
 
 ```bash
 $ eshu-trace bisect
@@ -42,53 +40,29 @@ Would you like to:
 
 ## Pricing
 
-**Eshu Trace is a paid product with a free trial.**
+### Try Free
+**3 free traces** - No credit card required
 
-### ✨ Free Trial
-- **3 free traces** to try before you buy
-- Full feature access during trial
-- No credit card required
+### Then Choose
 
-### 💳 Purchase Options
+| Eshu Trace | Eshu Premium |
+|------------|--------------|
+| **$19.99** one-time | **$9.99/mo** or $39/yr |
+| ✓ Unlimited traces | ✓ Everything in Trace |
+| ✓ Works standalone | ✓ Plus automated bisect |
+| | ✓ Plus AI features |
+| | ✓ Plus all installer features |
+| [**Buy →**](https://eshu-trace.gumroad.com/l/eshu-trace) | [**Subscribe →**](https://eshu-installer.com/upgrade) |
 
-**Option 1: Eshu Trace Standalone - $19.99 one-time**
-- ✓ Unlimited traces
-- ✓ Manual bisect
-- ✓ Snapshot comparison
-- ✓ Package diff viewer
-- ✓ Priority email support
-- [**Purchase →**](https://eshu-trace.gumroad.com/l/eshu-trace)
+**Need both tools?** Get Premium - it's cheaper than buying separately.
 
-**Option 2: Eshu Premium - $9.99/month or $39.99/year** *(Best Value!)*
-- ✓ **Everything** in Eshu Trace Standalone, PLUS:
-- ⭐ Automated bisect (boots VMs, runs tests)
-- ⭐ AI conflict prediction
-- ⭐ Community issue database
-- ⭐ **Full Eshu installer Premium features:**
-  - Ghost Mode (`eshu try`)
-  - Eshufile (system sync)
-  - Conflict Oracle
-  - AI-powered bundle suggestions
-  - Unlimited AI queries
-- ⭐ Priority support for all products
-- [**Upgrade →**](https://eshu-installer.com/upgrade)
+## What It Does
 
-> **💡 Recommendation:** If you only need trace debugging → Eshu Trace Standalone ($19.99 one-time). If you also use eshu-installer → Eshu Premium ($9.99/mo) includes both!
-
-## Features
-
-### Included Features
-- **Manual bisect** - Interactive binary search through package changes
-- **Snapshot comparison** - View package differences between any snapshots
-- **Package diff viewer** - See added/removed/upgraded packages
-- **Multi-distro support** - Works with Arch, Debian, Fedora, and derivatives
-- **Multiple snapshot backends** - Timeshift, Snapper, BTRFS, LVM
-
-### Eshu Premium Exclusive ⭐
-- **Automated bisect** - Boots VMs/containers and runs your test suite automatically
-- **AI conflict prediction** - Predicts which packages might conflict
-- **Community issue database** - See if others hit the same issue
-- **Integration with eshu-installer** - Use `eshu trace` command
+1. **Bisect** - Binary search to find the breaking package
+2. **Compare** - View differences between any two snapshots
+3. **Diagnose** - See exactly what changed (added/upgraded/removed)
+4. **Cross-distro** - Arch, Debian, Fedora, etc.
+5. **Snapshot backends** - Timeshift, Snapper, BTRFS, LVM
 
 ## Installation
 

@@ -33,7 +33,7 @@ use crate::snapshot::SnapshotManager;
 #[command(name = "eshu-trace")]
 #[command(author = "Eshu Team")]
 #[command(version)]
-#[command(about = "Time Travel Debug - Find the package that broke your system", long_about = None)]
+#[command(about = "Find which package broke your system", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -135,7 +135,7 @@ fn run() -> Result<()> {
 }
 
 fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Result<()> {
-    println!("{}", "🕐 Eshu Trace - Time Travel Debug".cyan().bold());
+    println!("{}", "🔍 Eshu Trace - Find the Breaking Package".cyan().bold());
     println!();
 
     // Check license and trace limit
