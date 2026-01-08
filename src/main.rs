@@ -184,7 +184,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
                     remaining,
                     3
                 );
-                println!("{}", "   Purchase: https://eshu-trace.gumroad.com/l/eshu-trace".dim());
+                println!("{}", "   Purchase: https://eshuapps.gumroad.com/l/eshu-trace".dim());
                 println!();
             }
         }
@@ -268,7 +268,7 @@ fn bisect_command(good: Option<String>, bad: Option<String>, auto: bool) -> Resu
                         "ℹ️".cyan(),
                         remaining
                     );
-                    println!("{}", "   Purchase unlimited: https://eshu-trace.gumroad.com/l/eshu-trace".dim());
+                    println!("{}", "   Purchase unlimited: https://eshuapps.gumroad.com/l/eshu-trace".dim());
                 } else {
                     println!("{}", "⚠️  This was your last free trace!".yellow().bold());
                     println!();

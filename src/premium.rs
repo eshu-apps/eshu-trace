@@ -1,4 +1,5 @@
 // Premium license checking with 3-free-traces trial
+// NOW WITH REAL GUMROAD API VALIDATION
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
@@ -6,6 +7,21 @@ use std::fs;
 use std::path::PathBuf;
 
 const FREE_TRACE_LIMIT: u32 = 3;
+
+#[derive(Debug, Deserialize)]
+struct GumroadResponse {
+    success: bool,
+    purchase: Option<GumroadPurchase>,
+}
+
+#[derive(Debug, Deserialize)]
+struct GumroadPurchase {
+    email: String,
+    #[allow(dead_code)]
+    sale_timestamp: String,
+    #[allow(dead_code)]
+    product_name: String,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TraceLicense {
@@ -129,26 +145,65 @@ pub fn activate_license(key: &str, email: &str) -> Result<(bool, String)> {
 }
 
 fn validate_gumroad_license(key: &str, email: &str) -> Result<bool> {
-    // Validate with Gumroad API
-    // For now, simple validation (will be replaced with actual Gumroad API call)
-
-    // Check if it's an Eshu Premium key (from eshu-installer)
+    // First check if user has Eshu Premium (from eshu-installer)
     if is_eshu_premium_active()? {
-        // If user has Eshu Premium, grant access
         return Ok(true);
     }
 
-    // Check Gumroad license
-    // This will be implemented with actual Gumroad API
+    // REAL Gumroad API validation
     let product_permalink = "eshu-trace";
-    let api_url = format!(
-        "https://api.gumroad.com/v2/licenses/verify?product_permalink={}&license_key={}",
-        product_permalink, key
-    );
+    let url = "https://api.gumroad.com/v2/licenses/verify";
 
-    // TODO: Implement actual HTTP request to Gumroad
-    // For now, just check key format (will be replaced)
-    Ok(key.starts_with("ESHU-TRACE-") && key.len() > 20)
+    let client = match reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(10))
+        .build() {
+        Ok(c) => c,
+        Err(_) => {
+            // If we can't build client, fail with error
+            return Err(anyhow::anyhow!(
+                "Could not initialize HTTP client. Please check your system configuration."
+            ));
+        }
+    };
+
+    let response = match client
+        .post(url)
+        .form(&[
+            ("product_permalink", product_permalink),
+            ("license_key", key),
+            ("increment_uses_count", "false"),
+        ])
+        .send() {
+        Ok(r) => r,
+        Err(_) => {
+            // Network error - fail with message
+            return Err(anyhow::anyhow!(
+                "Could not connect to Gumroad. Please check your internet connection and try again."
+            ));
+        }
+    };
+
+    let gumroad_response: GumroadResponse = match response.json() {
+        Ok(r) => r,
+        Err(_) => {
+            return Err(anyhow::anyhow!(
+                "Invalid response from Gumroad API. Please try again later."
+            ));
+        }
+    };
+
+    if !gumroad_response.success {
+        return Ok(false);
+    }
+
+    // Verify email matches purchase
+    if let Some(purchase) = gumroad_response.purchase {
+        if purchase.email.to_lowercase() != email.to_lowercase() {
+            return Ok(false);
+        }
+    }
+
+    Ok(true)
 }
 
 fn is_eshu_premium_active() -> Result<bool> {
@@ -195,9 +250,9 @@ fn get_eshu_installer_license_path() -> PathBuf {
 }
 
 pub fn get_upgrade_url() -> &'static str {
-    "https://eshu-trace.gumroad.com/l/eshu-trace"
+    "https://eshuapps.gumroad.com/l/eshu-trace"
 }
 
 pub fn get_eshu_premium_url() -> &'static str {
-    "https://eshu-installer.com/upgrade"
+    "https://eshuapps.gumroad.com/l/eshu-premium"
 }
