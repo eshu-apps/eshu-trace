@@ -6,6 +6,11 @@ Something broke after updates or new installs but you don't know which package c
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![Website](https://img.shields.io/badge/🌐-eshu--apps.com-blue)](https://eshu-apps.com)
+
+**[💎 Get Eshu Trace - $19.99](https://gumroad.com/l/eshu-trace)** | **[🎁 Get Eshu Premium - $9.99/mo](https://eshuapps.gumroad.com/l/eshu-premium)** | **[💝 Donate](https://gumroad.com/l/eshu-donate)**
+
+> 🎉 **3 FREE traces to try it out!**
 
 ## The Problem
 
@@ -221,12 +226,14 @@ eshu trace recovery
 
 Your Premium license grants unlimited access!
 
-## Support
+## Support & Contact
 
+- 🌐 **Website**: [eshu-apps.com](https://eshu-apps.com)
+- 📧 **Support**: support@eshu-apps.com
 - 📖 **Docs**: This README
-- 🐛 **Issues**: [GitHub Issues](https://github.com/eshu-apps/eshu-trace/issues)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/eshu-apps/eshu-trace/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/eshu-apps/eshu-trace/discussions)
-- 📧 **Email**: support@eshu-apps.com
+- 💝 **Donate**: [Support the Project](https://gumroad.com/l/eshu-donate)
 
 ## License
 
